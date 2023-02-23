@@ -4,6 +4,7 @@ import com.abe.Backend.repository.UserRepository;
 import com.abe.Backend.security.jwt.AuthEntryPointJwt;
 import com.abe.Backend.security.jwt.AuthTokenFilter;
 import com.abe.Backend.security.serviceImlp.UserDetailsServiceImpl;
+import com.abe.Backend.security.session.SessionFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +22,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -30,6 +35,7 @@ public class WebSecurityConfiguration {
     @Value("${spring.h2.console.path}")
     private String h2ConsolePath;
     private final AuthTokenFilter authTokenFilter;
+    private final SessionFilter sessionFilter;
     private final UserRepository userRepository;
     private final AuthEntryPointJwt unauthorizedHandler;
 
@@ -40,11 +46,10 @@ public class WebSecurityConfiguration {
     }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf().disable()
+        return http.cors().and().csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/products/new","/products/authenticate").permitAll()
-                .and()
-                .authorizeHttpRequests()
+                .requestMatchers("/api/user/**","/api/test/**").permitAll()
+                .requestMatchers(toH2Console()).permitAll()
                 .requestMatchers("/products/**")
                 .authenticated().and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
@@ -72,4 +77,27 @@ public class WebSecurityConfiguration {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
+
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        return http.cors().and().csrf().disable()
+//                .authorizeHttpRequests()
+//                .requestMatchers("/api/auth/**","/api/test/**",h2ConsolePath + "/**").permitAll()
+//                .requestMatchers(toH2Console()).permitAll()
+//                .and().headers().frameOptions().sameOrigin()
+//
+//                .and()
+//                .authorizeHttpRequests()
+//                .requestMatchers("/products/**")
+//                .authenticated().and()
+////                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
+//                .sessionManagement()
+//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+////                .and()
+////                .headers().frameOptions().sameOrigin()
+//                .and()
+//                .authenticationProvider(authenticationProvider())
+//                .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class)
+//                .build();
+//    }
 }

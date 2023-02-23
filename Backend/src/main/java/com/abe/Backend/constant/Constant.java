@@ -5,8 +5,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 
 public interface Constant {
-
-
+    String DEFAULT_USER_STATUS = "false";
     String UNKNOWN_EXCEPTION = "Something Went Wrong. A unknown Exception occurred.";
     String SECURITY_EXCEPTION = "Something Went Wrong. A Security Exception occurred.";
     String MALFORMEDJWT_EXCEPTION = "Something Went Wrong. A MalformedJwt Exception occurred.";

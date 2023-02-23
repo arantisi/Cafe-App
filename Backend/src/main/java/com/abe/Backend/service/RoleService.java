@@ -1,4 +1,4 @@
 package com.abe.Backend.service;
 
-public interface RoleService {
+public interface RoleService{
 }

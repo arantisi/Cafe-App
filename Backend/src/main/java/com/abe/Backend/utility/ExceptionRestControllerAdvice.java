@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 @Slf4j
 public class ExceptionRestControllerAdvice {
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> generalExceptionHandler(Exception exception){
-        log.error("unknown Exception", exception.getMessage());
-        return ResponseEntity.internalServerError().body(Constant.UNKNOWN_EXCEPTION);
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<String> generalExceptionHandler(Exception exception){
+//        log.error("unknown Exception", exception.getMessage());
+//        return ResponseEntity.internalServerError().body(Constant.UNKNOWN_EXCEPTION);
+//    }
     @ExceptionHandler(SecurityException.class)
     public ResponseEntity<String> SecurityExceptionHandler(SecurityException exception){
         log.error("Invalid JWT signature: {}", exception.getMessage());

@@ -1,5 +1,6 @@
 package com.abe.Backend.entity;
 
+import com.abe.Backend.constant.Constant;
 import com.abe.Backend.constant.RoleEnum;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -38,8 +39,9 @@ public class UserEntity implements Serializable {
     @NotBlank
     private String userPhoneNumber;
     @NotBlank
-    private String userStatus = "false";
+    private String userStatus = Constant.DEFAULT_USER_STATUS;
     @ManyToMany(fetch = FetchType.LAZY)
     @NotNull
-    private Set<RoleEntity> roleEntitySet = new HashSet<>(Arrays.asList(new RoleEntity(1, RoleEnum.USER)));
+    private Set<RoleEntity> roleEntitySet;
+//    private Set<RoleEntity> roleEntitySet = new HashSet<>(Arrays.asList(new RoleEntity(1, RoleEnum.ROLE_USER)));
 }
