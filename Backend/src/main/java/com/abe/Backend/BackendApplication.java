@@ -51,7 +51,6 @@ public class BackendApplication {
 			userEntity1.setUserEmail("email1@gmail.com");
 			userEntity1.setUserPassword(passwordEncoder.encode("p1"));
 			userRepository.save(userEntity1);
-
 		};
 
 	}

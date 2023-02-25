@@ -35,12 +35,8 @@ import static org.springframework.boot.autoconfigure.security.servlet.PathReques
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfiguration {
-    @Value("${spring.h2.console.path}")
-    private String h2ConsolePath;
 
-    private final SessionFilter sessionFilter;
     private final UserRepository userRepository;
-    private final AuthEntryPointJwt unauthorizedHandler;
     private final ConfigurableBeanFactory beanFactory;
 
     @Bean
@@ -58,20 +54,21 @@ public class WebSecurityConfiguration {
                         .requestMatchers(toH2Console()).permitAll()
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().denyAll())
+                .csrf(customizer -> customizer
+                        .ignoringRequestMatchers(toH2Console()))
                 .headers(customizer -> customizer
                         .frameOptions().sameOrigin())
                 .exceptionHandling(customizer -> customizer
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
-                .rememberMe(customizer -> customizer.alwaysRemember(true).key("demo"))
+                .rememberMe(customizer -> customizer.alwaysRemember(true).key("demo").userDetailsService(userDetailsService()))
                 .build();
 
-//        var rememberMeServices = http.getSharedObject(RememberMeServices.class);
-//        beanFactory.registerSingleton("rememberMeServices", rememberMeServices);
+        var rememberMeServices = http.getSharedObject(RememberMeServices.class);
+        beanFactory.registerSingleton("rememberMeServices", rememberMeServices);
 
         return chain;
     }
-
-//    @Bean
+//@Bean
 //    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 //        return http
 //                .authorizeHttpRequests(customizer -> customizer
@@ -84,27 +81,11 @@ public class WebSecurityConfiguration {
 //                        .frameOptions().sameOrigin())
 //                .exceptionHandling(customizer -> customizer
 //                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
-//                .rememberMe(customizer -> customizer.alwaysRemember(true).key("demo"))
+//                .csrf().disable()
 //                .build();
 //    }
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        return http.cors().and().csrf().disable()
-//                .authorizeHttpRequests()
-//                .requestMatchers("/api/user/sign-in").permitAll()
-//                .requestMatchers(toH2Console()).permitAll()
-//                .requestMatchers("/products/**")
-//                .authenticated().and()
-//                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-//                .sessionManagement()
-//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                .and()
-//                .headers().frameOptions().sameOrigin()
-//                .and()
-//                .authenticationProvider(authenticationProvider())
-//                .addFilterBefore(sessionFilter, UsernamePasswordAuthenticationFilter.class)
-//                .build();
-//    }
+
+//
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -125,26 +106,5 @@ public class WebSecurityConfiguration {
         return new HttpSessionEventPublisher();
     }
 
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        return http.cors().and().csrf().disable()
-//                .authorizeHttpRequests()
-//                .requestMatchers("/api/auth/**","/api/test/**",h2ConsolePath + "/**").permitAll()
-//                .requestMatchers(toH2Console()).permitAll()
-//                .and().headers().frameOptions().sameOrigin()
-//
-//                .and()
-//                .authorizeHttpRequests()
-//                .requestMatchers("/products/**")
-//                .authenticated().and()
-////                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-//                .sessionManagement()
-//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-////                .and()
-////                .headers().frameOptions().sameOrigin()
-//                .and()
-//                .authenticationProvider(authenticationProvider())
-//                .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class)
-//                .build();
-//    }
+
 }

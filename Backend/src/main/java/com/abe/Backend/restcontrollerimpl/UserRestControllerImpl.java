@@ -28,6 +28,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.csrf.CsrfToken;
@@ -49,6 +50,7 @@ import java.util.stream.Collectors;
 @DependsOn("securityFilterChain")
 public class UserRestControllerImpl implements UserRestController {
     private final UserService userService;
+    private final RememberMeServices rememberMeServices;
 
 
 
@@ -61,6 +63,9 @@ public class UserRestControllerImpl implements UserRestController {
     @Override
     public ResponseEntity<SignInResponseDTO> signIn(@Valid @RequestBody SignInRequestDTO signInRequestDTO, BindingResult bindingResult,
                                                     HttpServletRequest request, HttpServletResponse response) {
+        if (request.getUserPrincipal() != null) {
+            throw new AppException("Please logout first.");
+        }
         if (bindingResult.hasErrors()) {
             throw new AppException("Invalid username or password");
         }
@@ -72,18 +77,10 @@ public class UserRestControllerImpl implements UserRestController {
         Authentication auth = (Authentication) request.getUserPrincipal();
         UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
         log.info("User {} logged in.", userDetails.getUsername());
+        rememberMeServices.loginSuccess(request, response, auth);
 
 
         return ResponseEntity.ok().body(new SignInResponseDTO());
-
-//        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-//        Set<String> roles = userDetails.getAuthorities().stream()
-//                .map(GrantedAuthority::getAuthority)
-//                .collect(Collectors.toSet());
-//        return ResponseEntity.ok()
-//                .body(SignInResponseDTO.builder().userName(userDetails.getUsername()).userEmail(userDetails.getUserEmail())
-//                                        .userPhoneNumber(userDetails.getUserPhoneNumber()).userStatus(userDetails.getUserStatus())
-//                                        .userRoleSet(roles).build());
 
     }
 
