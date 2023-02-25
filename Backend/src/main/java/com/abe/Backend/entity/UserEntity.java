@@ -42,6 +42,6 @@ public class UserEntity implements Serializable {
     private String userStatus = Constant.DEFAULT_USER_STATUS;
     @ManyToMany(fetch = FetchType.LAZY)
     @NotNull
-    private Set<RoleEntity> roleEntitySet;
-//    private Set<RoleEntity> roleEntitySet = new HashSet<>(Arrays.asList(new RoleEntity(1, RoleEnum.ROLE_USER)));
+//    private Set<RoleEntity> roleEntitySet;
+    private Set<RoleEntity> roleEntitySet = new HashSet<>(Arrays.asList(new RoleEntity(1, RoleEnum.ROLE_USER)));
 }

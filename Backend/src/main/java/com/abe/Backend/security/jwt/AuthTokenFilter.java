@@ -19,31 +19,33 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class AuthTokenFilter extends OncePerRequestFilter {
-    private final UserDetailsServiceImpl userDetailsService;
-    private final JwtUtility jwtUtility;
-
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String jwt = parseJwt(request);
-        String userName = null;
-
-            if (jwt != null) {
-                userName = jwtUtility.getUserNameFromJwtToken(jwt);
-            }
-
-        if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
-            if (jwtUtility.validateJwtToken(jwt, userDetails)) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-            }
-        }
-        filterChain.doFilter(request, response);
-}
-
-    private String parseJwt(HttpServletRequest request) {
-        return jwtUtility.getJwtFromCookies(request);
-    }
+public class AuthTokenFilter
+        //extends OncePerRequestFilter
+{
+//    private final UserDetailsServiceImpl userDetailsService;
+//    private final JwtUtility jwtUtility;
+//
+//    @Override
+//    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+//        String jwt = parseJwt(request);
+//        String userName = null;
+//
+//            if (jwt != null) {
+//                userName = jwtUtility.getUserNameFromJwtToken(jwt);
+//            }
+//
+//        if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+//            UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
+//            if (jwtUtility.validateJwtToken(jwt, userDetails)) {
+//                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+//                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+//                SecurityContextHolder.getContext().setAuthentication(authToken);
+//            }
+//        }
+//        filterChain.doFilter(request, response);
+//}
+//
+//    private String parseJwt(HttpServletRequest request) {
+//        return jwtUtility.getJwtFromCookies(request);
+//    }
 }

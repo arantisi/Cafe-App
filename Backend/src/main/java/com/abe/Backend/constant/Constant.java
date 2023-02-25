@@ -1,8 +1,5 @@
 package com.abe.Backend.constant;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
 
 public interface Constant {
     String DEFAULT_USER_STATUS = "false";

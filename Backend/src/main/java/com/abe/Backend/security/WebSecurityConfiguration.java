@@ -7,8 +7,10 @@ import com.abe.Backend.security.serviceImlp.UserDetailsServiceImpl;
 import com.abe.Backend.security.session.SessionFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -21,12 +23,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
-import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -35,34 +37,74 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 public class WebSecurityConfiguration {
     @Value("${spring.h2.console.path}")
     private String h2ConsolePath;
-    private final AuthTokenFilter authTokenFilter;
+
     private final SessionFilter sessionFilter;
     private final UserRepository userRepository;
     private final AuthEntryPointJwt unauthorizedHandler;
+    private final ConfigurableBeanFactory beanFactory;
 
     @Bean
     //authentication
     public UserDetailsService userDetailsService() {
         return new UserDetailsServiceImpl(userRepository);
     }
-    @Bean
+
+    @Bean("securityFilterChain")
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.cors().and().csrf().disable()
-                .authorizeHttpRequests()
-                .requestMatchers("/api/user/**","/api/test/**").permitAll()
-                .requestMatchers(toH2Console()).permitAll()
-                .requestMatchers("/products/**")
-                .authenticated().and()
-                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .headers().frameOptions().sameOrigin()
-                .and()
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class)
+        var chain = http
+                .authorizeHttpRequests(customizer -> customizer
+                        .requestMatchers("/api/user/sign-in").permitAll()
+                        .requestMatchers("/api/user/csrf").permitAll()
+                        .requestMatchers(toH2Console()).permitAll()
+                        .requestMatchers("/api/**").authenticated()
+                        .anyRequest().denyAll())
+                .headers(customizer -> customizer
+                        .frameOptions().sameOrigin())
+                .exceptionHandling(customizer -> customizer
+                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+                .rememberMe(customizer -> customizer.alwaysRemember(true).key("demo"))
                 .build();
+
+//        var rememberMeServices = http.getSharedObject(RememberMeServices.class);
+//        beanFactory.registerSingleton("rememberMeServices", rememberMeServices);
+
+        return chain;
     }
+
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        return http
+//                .authorizeHttpRequests(customizer -> customizer
+//                        .requestMatchers("/api/user/sign-in").permitAll()
+//                        .requestMatchers("/api/user/csrf").permitAll()
+//                        .requestMatchers(toH2Console()).permitAll()
+//                        .requestMatchers("/api/**").authenticated()
+//                        .anyRequest().denyAll())
+//                .headers(customizer -> customizer
+//                        .frameOptions().sameOrigin())
+//                .exceptionHandling(customizer -> customizer
+//                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+//                .rememberMe(customizer -> customizer.alwaysRemember(true).key("demo"))
+//                .build();
+//    }
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        return http.cors().and().csrf().disable()
+//                .authorizeHttpRequests()
+//                .requestMatchers("/api/user/sign-in").permitAll()
+//                .requestMatchers(toH2Console()).permitAll()
+//                .requestMatchers("/products/**")
+//                .authenticated().and()
+//                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
+//                .sessionManagement()
+//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                .and()
+//                .headers().frameOptions().sameOrigin()
+//                .and()
+//                .authenticationProvider(authenticationProvider())
+//                .addFilterBefore(sessionFilter, UsernamePasswordAuthenticationFilter.class)
+//                .build();
+//    }
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

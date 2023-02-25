@@ -3,13 +3,16 @@ package com.abe.Backend;
 import com.abe.Backend.constant.RoleEnum;
 import com.abe.Backend.dto.SignUpRequestDTO;
 import com.abe.Backend.entity.RoleEntity;
+import com.abe.Backend.entity.UserEntity;
 import com.abe.Backend.repository.RoleRepository;
+import com.abe.Backend.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -23,7 +26,7 @@ public class BackendApplication {
 		SpringApplication.run(BackendApplication.class, args);
 	}
 	@Bean
-	public CommandLineRunner loadData( RoleRepository roleRepository) {
+	public CommandLineRunner loadData(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
 
 
 		return args ->
@@ -42,6 +45,12 @@ public class BackendApplication {
 			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 			String json = ow.writeValueAsString(object);
 			System.out.println(json);
+			UserEntity userEntity1 = new UserEntity();
+			userEntity1.setUserName("abe1");
+			userEntity1.setUserPhoneNumber("1");
+			userEntity1.setUserEmail("email1@gmail.com");
+			userEntity1.setUserPassword(passwordEncoder.encode("p1"));
+			userRepository.save(userEntity1);
 
 		};
 

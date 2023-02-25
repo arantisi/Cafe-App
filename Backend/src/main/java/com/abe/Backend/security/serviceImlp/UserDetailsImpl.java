@@ -14,6 +14,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -25,7 +26,7 @@ public class UserDetailsImpl implements UserDetails, Serializable {
     private static final long serialVersionUID = 1L;
     private long userId;
     private String userName;
-    @JsonIgnore
+//    @JsonIgnore
     private String userPassword;
     private String userEmail;
 
@@ -35,9 +36,10 @@ public class UserDetailsImpl implements UserDetails, Serializable {
     private Collection<? extends GrantedAuthority> authorities;
 
     public static UserDetailsImpl build(UserEntity userEntity) {
-        List<GrantedAuthority> authorities = userEntity.getRoleEntitySet().stream()
+        Set<GrantedAuthority> authorities = userEntity.getRoleEntitySet().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getRoleName().name()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
+
 
         return new UserDetailsImpl(
                 userEntity.getUserId(),
