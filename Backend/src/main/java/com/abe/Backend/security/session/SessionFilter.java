@@ -33,6 +33,7 @@ public class SessionFilter implements Filter {
                 res.addCookie(session);
             }
         }
+        System.out.println("why is this here");
         filterChain.doFilter(req, res);
     }
 

@@ -1,12 +1,9 @@
 package com.abe.Backend.security;
 
 import com.abe.Backend.repository.UserRepository;
-import com.abe.Backend.security.jwt.AuthEntryPointJwt;
-import com.abe.Backend.security.jwt.AuthTokenFilter;
+
 import com.abe.Backend.security.serviceImlp.UserDetailsServiceImpl;
-import com.abe.Backend.security.session.SessionFilter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,14 +15,12 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.RememberMeServices;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
@@ -68,24 +63,7 @@ public class WebSecurityConfiguration {
 
         return chain;
     }
-//@Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        return http
-//                .authorizeHttpRequests(customizer -> customizer
-//                        .requestMatchers("/api/user/sign-in").permitAll()
-//                        .requestMatchers("/api/user/csrf").permitAll()
-//                        .requestMatchers(toH2Console()).permitAll()
-//                        .requestMatchers("/api/**").authenticated()
-//                        .anyRequest().denyAll())
-//                .headers(customizer -> customizer
-//                        .frameOptions().sameOrigin())
-//                .exceptionHandling(customizer -> customizer
-//                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
-//                .csrf().disable()
-//                .build();
-//    }
 
-//
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -105,6 +83,5 @@ public class WebSecurityConfiguration {
     public HttpSessionEventPublisher httpSessionEventPublisher() {
         return new HttpSessionEventPublisher();
     }
-
 
 }

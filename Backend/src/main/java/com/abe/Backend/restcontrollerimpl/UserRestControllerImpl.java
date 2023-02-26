@@ -19,6 +19,7 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
@@ -75,8 +76,10 @@ public class UserRestControllerImpl implements UserRestController {
             throw new AppException("Invalid username or password");
         }
         Authentication auth = (Authentication) request.getUserPrincipal();
+        System.out.println(auth);
         UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
         log.info("User {} logged in.", userDetails.getUsername());
+        log.info("User {} logged in.", userDetails.getAuthorities());
         rememberMeServices.loginSuccess(request, response, auth);
 
 
@@ -85,13 +88,20 @@ public class UserRestControllerImpl implements UserRestController {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     public ResponseEntity<String> signOut() {
-        return null;
+        return ResponseEntity.ok().body("hiiiiiiiii");
     }
 
     @Override
     public ResponseEntity<CsrfResponseDTO> csrf(HttpServletRequest request) {
         CsrfToken csrf = (CsrfToken) request.getAttribute("_csrf");
         return ResponseEntity.ok().body(new CsrfResponseDTO(csrf.getToken()));
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<String> admin() {
+        return ResponseEntity.ok().body("adminnn");
     }
 }

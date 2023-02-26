@@ -6,6 +6,7 @@ import com.abe.Backend.dto.SignInResponseDTO;
 import com.abe.Backend.dto.SignUpRequestDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.validation.BindingResult;
@@ -24,5 +25,7 @@ public interface UserRestController {
     ResponseEntity<String> signOut();
     @GetMapping("/csrf")
     ResponseEntity<CsrfResponseDTO> csrf(HttpServletRequest request);
+    @PostMapping("/admin")
+    ResponseEntity<String> admin();
 
 }

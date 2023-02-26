@@ -40,16 +40,18 @@ public class BackendApplication {
 			roleRepository.save(roleEntity2);
 			roleRepository.save(roleEntity3);
 			SignUpRequestDTO object = new SignUpRequestDTO();
-			Set<String> s = new HashSet<>(Arrays.asList("ROLE_USER","ROLE_ADMIN"));
-			object.setRoleEntitySet(s);
-			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-			String json = ow.writeValueAsString(object);
-			System.out.println(json);
+			Set<RoleEntity> s = new HashSet<>(Arrays.asList(new RoleEntity(1,RoleEnum.ROLE_USER),new RoleEntity(3,RoleEnum.ROLE_ADMIN)));
+//			Set<String> s = new HashSet<>(Arrays.asList("ROLE_USER"));
+//			object.setRoleEntitySet(s);
+//			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+//			String json = ow.writeValueAsString(object);
+//			System.out.println(json);
 			UserEntity userEntity1 = new UserEntity();
 			userEntity1.setUserName("abe1");
 			userEntity1.setUserPhoneNumber("1");
 			userEntity1.setUserEmail("email1@gmail.com");
 			userEntity1.setUserPassword(passwordEncoder.encode("p1"));
+			userEntity1.setRoleEntitySet(s);
 			userRepository.save(userEntity1);
 		};
 
