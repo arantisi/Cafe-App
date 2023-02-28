@@ -1,0 +1,8 @@
+
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(«Š÷ö
+V	java:S125,"<This block of commented-out lines of code should be removed.(ùÖ‰Öþÿÿÿÿ
+J
+java:S1128
+"4Remove this unused import 'org.hibernate.Hibernate'.(óñ‹è
+D
+java:S1128".Remove this unused import 'java.util.Objects'.(¼¸õ›

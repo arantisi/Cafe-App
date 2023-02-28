@@ -1,4 +1,4 @@
-package com.abe.Backend.security.serviceImlp;
+package com.abe.Backend.security.serviceImpl;
 
 import com.abe.Backend.entity.UserEntity;
 import com.abe.Backend.repository.UserRepository;

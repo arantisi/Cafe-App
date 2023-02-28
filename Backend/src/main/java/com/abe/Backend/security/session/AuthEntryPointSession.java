@@ -1,4 +1,4 @@
-package com.abe.Backend.security.jwt;
+package com.abe.Backend.security.session;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
@@ -16,7 +16,7 @@ import java.util.Map;
 
 @Component
 @Slf4j
-public class AuthEntryPointJwt implements AuthenticationEntryPoint {
+public class AuthEntryPointSession implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         log.error("Unauthorized error: {}", authException.getMessage());

@@ -2,7 +2,8 @@ package com.abe.Backend.security;
 
 import com.abe.Backend.repository.UserRepository;
 
-import com.abe.Backend.security.serviceImlp.UserDetailsServiceImpl;
+import com.abe.Backend.security.serviceImpl.UserDetailsServiceImpl;
+import com.abe.Backend.security.session.AuthEntryPointSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +16,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +24,12 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
+import org.springframework.session.MapSessionRepository;
+import org.springframework.session.config.annotation.web.http.EnableSpringHttpSession;
+import org.springframework.session.web.http.CookieSerializer;
+import org.springframework.session.web.http.DefaultCookieSerializer;
+
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
 
@@ -29,10 +37,12 @@ import static org.springframework.boot.autoconfigure.security.servlet.PathReques
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
+@EnableSpringHttpSession
 public class WebSecurityConfiguration {
 
     private final UserRepository userRepository;
     private final ConfigurableBeanFactory beanFactory;
+    private final AuthEntryPointSession unauthorizedHandler;
 
     @Bean
     //authentication
@@ -49,12 +59,18 @@ public class WebSecurityConfiguration {
                         .requestMatchers(toH2Console()).permitAll()
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().denyAll())
+                //adding
+                .sessionManagement(customizer -> customizer
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                        .maximumSessions(2))
+                .authenticationProvider(authenticationProvider())
+//
                 .csrf(customizer -> customizer
                         .ignoringRequestMatchers(toH2Console()))
                 .headers(customizer -> customizer
                         .frameOptions().sameOrigin())
                 .exceptionHandling(customizer -> customizer
-                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+                        .authenticationEntryPoint(unauthorizedHandler))
                 .rememberMe(customizer -> customizer.alwaysRemember(true).key("demo").userDetailsService(userDetailsService()))
                 .build();
 
@@ -83,5 +99,17 @@ public class WebSecurityConfiguration {
     public HttpSessionEventPublisher httpSessionEventPublisher() {
         return new HttpSessionEventPublisher();
     }
+
+    @Bean
+    CookieSerializer cookieSerializer() {
+        DefaultCookieSerializer defaultCookieSerializer = new DefaultCookieSerializer();
+        defaultCookieSerializer.setCookieName("CUSTOMSESSIONID");
+        defaultCookieSerializer.setUseHttpOnlyCookie(true);
+        defaultCookieSerializer.setUseSecureCookie(true);
+        defaultCookieSerializer.setSameSite("Strict");
+        return defaultCookieSerializer;
+    }
+
+
 
 }

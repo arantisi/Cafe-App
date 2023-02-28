@@ -4,6 +4,8 @@ import com.abe.Backend.dto.CsrfResponseDTO;
 import com.abe.Backend.dto.SignInRequestDTO;
 import com.abe.Backend.dto.SignInResponseDTO;
 import com.abe.Backend.dto.SignUpRequestDTO;
+import com.abe.Backend.security.serviceImpl.UserDetailsImpl;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.DependsOn;
@@ -22,10 +24,12 @@ public interface UserRestController {
     ResponseEntity<SignInResponseDTO> signIn(SignInRequestDTO signInRequestDTO, BindingResult bindingResult,
                                              HttpServletRequest request, HttpServletResponse response);
     @PostMapping("/sign-out")
-    ResponseEntity<String> signOut();
+    ResponseEntity<String> signOut(HttpServletRequest request) throws ServletException;
     @GetMapping("/csrf")
     ResponseEntity<CsrfResponseDTO> csrf(HttpServletRequest request);
     @PostMapping("/admin")
     ResponseEntity<String> admin();
+    @GetMapping("/current-user")
+    ResponseEntity<SignInResponseDTO> currentUser(UserDetailsImpl userDetails);
 
 }

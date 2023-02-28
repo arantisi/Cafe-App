@@ -1,4 +1,4 @@
-package com.abe.Backend.security.serviceImlp;
+package com.abe.Backend.security.serviceImpl;
 
 import com.abe.Backend.entity.UserEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -13,20 +13,18 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Builder
 public class UserDetailsImpl implements UserDetails, Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
     private long userId;
     private String userName;
-//    @JsonIgnore
+    @JsonIgnore
     private String userPassword;
     private String userEmail;
 

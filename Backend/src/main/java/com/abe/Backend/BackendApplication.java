@@ -6,8 +6,7 @@ import com.abe.Backend.entity.RoleEntity;
 import com.abe.Backend.entity.UserEntity;
 import com.abe.Backend.repository.RoleRepository;
 import com.abe.Backend.repository.UserRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,7 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 @SpringBootApplication
