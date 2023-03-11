@@ -151,8 +151,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity<CsrfResponseDTO> csrf(HttpServletRequest request) {
-        CsrfToken csrf = (CsrfToken) request.getAttribute("_csrf");
-        log.info(csrf.toString());
-        return ResponseEntity.ok().body(new CsrfResponseDTO(csrf.getToken()));
+//        CsrfToken csrf = (CsrfToken) request.getAttribute("_csrf");
+//        log.info(csrf.toString());
+//        return ResponseEntity.ok().body(new CsrfResponseDTO(csrf.getToken()));
+        return null;
     }
 }

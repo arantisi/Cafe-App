@@ -4,6 +4,7 @@ import com.abe.Backend.repository.UserRepository;
 
 import com.abe.Backend.security.serviceImpl.UserDetailsServiceImpl;
 import com.abe.Backend.security.session.AuthEntryPointSession;
+import com.abe.Backend.security.session.CsrfTokenResponseHeaderBindingFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
@@ -21,15 +22,15 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.RememberMeServices;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
-import org.springframework.session.MapSessionRepository;
-import org.springframework.session.config.annotation.web.http.EnableSpringHttpSession;
+
+import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 
-import java.util.concurrent.ConcurrentHashMap;
 
 import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
 
@@ -37,7 +38,7 @@ import static org.springframework.boot.autoconfigure.security.servlet.PathReques
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
-@EnableSpringHttpSession
+@EnableJdbcHttpSession
 public class WebSecurityConfiguration {
 
     private final UserRepository userRepository;
@@ -72,6 +73,7 @@ public class WebSecurityConfiguration {
                 .exceptionHandling(customizer -> customizer
                         .authenticationEntryPoint(unauthorizedHandler))
                 .rememberMe(customizer -> customizer.alwaysRemember(true).key("demo").userDetailsService(userDetailsService()))
+                .addFilterBefore(csrfTokenResponseHeaderBindingFilter(), UsernamePasswordAuthenticationFilter.class)
                 .build();
 
         var rememberMeServices = http.getSharedObject(RememberMeServices.class);
@@ -108,6 +110,11 @@ public class WebSecurityConfiguration {
         defaultCookieSerializer.setUseSecureCookie(true);
         defaultCookieSerializer.setSameSite("Strict");
         return defaultCookieSerializer;
+    }
+
+    @Bean
+    public CsrfTokenResponseHeaderBindingFilter csrfTokenResponseHeaderBindingFilter() {
+        return new CsrfTokenResponseHeaderBindingFilter();
     }
 
 
